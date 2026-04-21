@@ -7,7 +7,7 @@ import sys
 INPUT_AUDIO = "./assets/audio/audio.mp3"
 # Explicitly set the output path as requested
 OUTPUT_PATH = "./assets/trim_audio/trim_audio.mp3"
-CLIP_LEN = 20
+CLIP_LEN = 30
 STEP = 4  # Scans every 4 seconds for faster processing
 
 def find_best_drop(file):
