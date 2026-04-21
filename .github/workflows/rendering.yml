@@ -6,6 +6,10 @@ permissions:
 on:
   workflow_dispatch:
   push:
+  schedule:
+    - cron: '0 3 * * *'
+    - cron: '0 4 * * *'
+    - cron: '0 5 * * *'
   
 jobs:
   render-and-upload:
