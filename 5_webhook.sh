@@ -8,89 +8,117 @@ git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
 CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 
-# --- FUNCTION ---
-send_webhook() {
-    FILE="$1"
-    TYPE="$2"
-    WEBHOOK="$3"
-
-    URL_FILENAME=$(basename "$FILE")
-    SAFE_NAME="${URL_FILENAME%.*}"
-
-    REL_PATH="${FILE#./}"
-    RAW_URL="https://raw.githubusercontent.com/${GITHUB_REPOSITORY}/${CURRENT_BRANCH}/${REL_PATH}"
-
-    echo "-----------------------------------------------"
-    echo "📦 TYPE: $TYPE"
-    echo "📂 FILE PATH: $FILE"
-    echo "🌐 REL PATH: $REL_PATH"
-    echo "🔗 RAW URL: $RAW_URL"
-
-    git add -f "$FILE"
-    git add -f metadata.json
-
-    git commit -m "Upload $TYPE: $SAFE_NAME [skip ci]" || git commit --amend --no-edit
-    git push origin "$CURRENT_BRANCH" --force
-
-    echo "⏳ Waiting 5s..."
-    sleep 5
-
-    PAYLOAD=$(jq -n \
-      --arg url "$RAW_URL" \
-      --arg name "$URL_FILENAME" \
-      --arg type "$TYPE" \
-      '{fileUrl: $url, fileName: $name, type: $type}')
-
-    echo "📡 Sending $TYPE webhook..."
-
-    RESPONSE=$(curl -s -L -X POST \
-      "$WEBHOOK" \
-      -H "Content-Type: application/json" \
-      -d "$PAYLOAD")
-
-    echo "📩 Response:"
-    echo "$RESPONSE"
-}
-
-# ============================================
-# 🔴 STEP 1: REEL FILES
-# ============================================
+# ==================================================
+# 🔴 REEL WEBHOOK SECTION
+# ==================================================
 
 echo ""
-echo "🎬 ===== REEL FILES ====="
+echo "🎬 ===== REEL SECTION ====="
 
 REEL_FILES=$(find ./output/reel -type f -name "*.mp4" 2>/dev/null)
 
 if [ -z "$REEL_FILES" ]; then
     echo "⚠️ No reel files found"
 else
-    echo "📂 Reel Paths:"
+    echo "📂 Reel files:"
     echo "$REEL_FILES"
 
     for FILE in $REEL_FILES; do
-        send_webhook "$FILE" "reel" "$WEBHOOK_REEL"
+
+        echo "-----------------------------------------------"
+        echo "📦 REEL FILE: $FILE"
+
+        URL_FILENAME=$(basename "$FILE")
+        SAFE_NAME="${URL_FILENAME%.*}"
+
+        REL_PATH="${FILE#./}"
+        RAW_URL="https://raw.githubusercontent.com/${GITHUB_REPOSITORY}/${CURRENT_BRANCH}/${REL_PATH}"
+
+        echo "🔗 REEL RAW_URL:"
+        echo "$RAW_URL"
+
+        git add -f "$FILE"
+        git add -f metadata.json
+
+        git commit -m "Upload REEL: $SAFE_NAME [skip ci]" || git commit --amend --no-edit
+        git push origin "$CURRENT_BRANCH" --force
+
+        echo "⏳ Waiting 5s..."
+        sleep 5
+
+        PAYLOAD=$(jq -n \
+          --arg url "$RAW_URL" \
+          --arg name "$URL_FILENAME" \
+          '{fileUrl: $url, fileName: $name}')
+
+        echo "📡 Sending REEL webhook..."
+
+        RESPONSE=$(curl -s -L -X POST \
+          "$WEBHOOK_REEL" \
+          -H "Content-Type: application/json" \
+          -d "$PAYLOAD")
+
+        echo "📩 REEL Response:"
+        echo "$RESPONSE"
+
     done
 fi
 
-# ============================================
-# 🔵 STEP 2: VIDEO FILES
-# ============================================
+# ==================================================
+# 🔵 VIDEO WEBHOOK SECTION
+# ==================================================
 
 echo ""
-echo "🎥 ===== VIDEO FILES ====="
+echo "🎥 ===== VIDEO SECTION ====="
 
 VIDEO_FILES=$(find ./output/video -type f -name "*.mp4" 2>/dev/null)
 
 if [ -z "$VIDEO_FILES" ]; then
     echo "⚠️ No video files found"
 else
-    echo "📂 Video Paths:"
+    echo "📂 Video files:"
     echo "$VIDEO_FILES"
 
     for FILE in $VIDEO_FILES; do
-        send_webhook "$FILE" "video" "$WEBHOOK_VIDEO"
+
+        echo "-----------------------------------------------"
+        echo "📦 VIDEO FILE: $FILE"
+
+        URL_FILENAME=$(basename "$FILE")
+        SAFE_NAME="${URL_FILENAME%.*}"
+
+        REL_PATH="${FILE#./}"
+        RAW_URL="https://raw.githubusercontent.com/${GITHUB_REPOSITORY}/${CURRENT_BRANCH}/${REL_PATH}"
+
+        echo "🔗 VIDEO RAW_URL:"
+        echo "$RAW_URL"
+
+        git add -f "$FILE"
+        git add -f metadata.json
+
+        git commit -m "Upload VIDEO: $SAFE_NAME [skip ci]" || git commit --amend --no-edit
+        git push origin "$CURRENT_BRANCH" --force
+
+        echo "⏳ Waiting 5s..."
+        sleep 5
+
+        PAYLOAD=$(jq -n \
+          --arg url "$RAW_URL" \
+          --arg name "$URL_FILENAME" \
+          '{fileUrl: $url, fileName: $name}')
+
+        echo "📡 Sending VIDEO webhook..."
+
+        RESPONSE=$(curl -s -L -X POST \
+          "$WEBHOOK_VIDEO" \
+          -H "Content-Type: application/json" \
+          -d "$PAYLOAD")
+
+        echo "📩 VIDEO Response:"
+        echo "$RESPONSE"
+
     done
 fi
 
 echo ""
-echo "✨ All done"
+echo "✨ DONE"
