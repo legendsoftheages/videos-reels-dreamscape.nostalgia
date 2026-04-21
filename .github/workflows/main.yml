@@ -74,6 +74,9 @@ jobs:
 
       - name: 🔪 Step 3 - Split Audio & Image
         run: bash 3_audio_image_splitter.sh
+
+      - name: 🔉 Step 3.5 - Extract Best Part
+        run: python 3.5_trim_audio.py
     
       - name: 🎬 Step 4 - Render reel
         run: |
