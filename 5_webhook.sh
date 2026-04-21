@@ -8,43 +8,26 @@ git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
 CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 
-FILES=$(find ./output -type f -name "*.mp4")
-
-if [ -z "$FILES" ]; then
-    echo "❌ No MP4 files found"
-    exit 1
-fi
-
-for FILE in $FILES; do
-
-    echo "-----------------------------------------------"
-    echo "📦 Processing: $FILE"
+# --- FUNCTION ---
+send_webhook() {
+    FILE="$1"
+    TYPE="$2"
+    WEBHOOK="$3"
 
     URL_FILENAME=$(basename "$FILE")
     SAFE_NAME="${URL_FILENAME%.*}"
 
-    # --- Detect type ---
-    if [[ "$FILE" == *"/reel/"* ]]; then
-        WEBHOOK="$WEBHOOK_REEL"
-        TYPE="reel"
-    elif [[ "$FILE" == *"/video/"* ]]; then
-        WEBHOOK="$WEBHOOK_VIDEO"
-        TYPE="video"
-    else
-        echo "⚠️ Unknown type, skipping"
-        continue
-    fi
-
-    echo "📌 Type detected: $TYPE"
-
-    git add -f "$FILE"
-    git add -f metadata.json
-
     REL_PATH="${FILE#./}"
     RAW_URL="https://raw.githubusercontent.com/${GITHUB_REPOSITORY}/${CURRENT_BRANCH}/${REL_PATH}"
 
-    echo "🔗 RAW_URL:"
-    echo "$RAW_URL"
+    echo "-----------------------------------------------"
+    echo "📦 TYPE: $TYPE"
+    echo "📂 FILE PATH: $FILE"
+    echo "🌐 REL PATH: $REL_PATH"
+    echo "🔗 RAW URL: $RAW_URL"
+
+    git add -f "$FILE"
+    git add -f metadata.json
 
     git commit -m "Upload $TYPE: $SAFE_NAME [skip ci]" || git commit --amend --no-edit
     git push origin "$CURRENT_BRANCH" --force
@@ -67,7 +50,47 @@ for FILE in $FILES; do
 
     echo "📩 Response:"
     echo "$RESPONSE"
+}
 
-done
+# ============================================
+# 🔴 STEP 1: REEL FILES
+# ============================================
 
-echo "✨ Done"
+echo ""
+echo "🎬 ===== REEL FILES ====="
+
+REEL_FILES=$(find ./output/reel -type f -name "*.mp4" 2>/dev/null)
+
+if [ -z "$REEL_FILES" ]; then
+    echo "⚠️ No reel files found"
+else
+    echo "📂 Reel Paths:"
+    echo "$REEL_FILES"
+
+    for FILE in $REEL_FILES; do
+        send_webhook "$FILE" "reel" "$WEBHOOK_REEL"
+    done
+fi
+
+# ============================================
+# 🔵 STEP 2: VIDEO FILES
+# ============================================
+
+echo ""
+echo "🎥 ===== VIDEO FILES ====="
+
+VIDEO_FILES=$(find ./output/video -type f -name "*.mp4" 2>/dev/null)
+
+if [ -z "$VIDEO_FILES" ]; then
+    echo "⚠️ No video files found"
+else
+    echo "📂 Video Paths:"
+    echo "$VIDEO_FILES"
+
+    for FILE in $VIDEO_FILES; do
+        send_webhook "$FILE" "video" "$WEBHOOK_VIDEO"
+    done
+fi
+
+echo ""
+echo "✨ All done"
