@@ -36,7 +36,53 @@ git commit -m "Refresh Reel: $SAFE_NAME [skip ci]" || git commit --amend --no-ed
 git push origin "$CURRENT_BRANCH" --force
 
 # --- 3. WEBHOOK CALL ---
-if [ -n "$WEBHOOK_URL" ]; then
+if [ -n "$WEBHOOK_REEL" ]; then
+    echo "⏳ Waiting 5 seconds for GitHub sync..."
+    sleep 5
+
+    echo "📡 Sending Webhook: $URL_FILENAME"
+    
+    # Generate JSON payload
+    PAYLOAD=$(jq -n --arg url "$RAW_URL" --arg name "$URL_FILENAME" \
+        '{fileUrl: $url, fileName: $name}')
+
+    RESPONSE=$(curl -L -s -X POST -H "Content-Type: application/json" -d "$PAYLOAD" "$WEBHOOK_URL")
+    
+    echo "📩 Server Response: $RESPONSE"
+    echo -e "\n✨ Process Complete."
+fi
+echo "-----------------------------------------------"
+
+
+# --- 1. SETUP FILENAMES ---
+OUT_FILE=$(ls ./output/video/*.mp4 2>/dev/null | head -n 1)
+
+if [ ! -f "$OUT_FILE" ]; then
+    echo "❌ Error: Final video file was not created."
+    exit 1
+fi
+
+URL_FILENAME=$(basename "$OUT_FILE")
+SAFE_NAME="${URL_FILENAME%.*}"
+
+
+
+# Clean output except the current reel
+find ./output/video/ -type f ! -name "$URL_FILENAME" -delete
+
+# Force add in case they are in gitignore
+git add -f "$OUT_FILE"
+git add -f metadata.json
+
+RAW_URL="https://raw.githubusercontent.com/${GITHUB_REPOSITORY}/${CURRENT_BRANCH}/output/video/${URL_FILENAME}"
+
+echo "⚙️ Force pushing to $CURRENT_BRANCH..."
+# FIX: Added quotes and ensured the [skip ci] is inside the commit message string
+git commit -m "Refresh video: $SAFE_NAME [skip ci]" || git commit --amend --no-edit
+git push origin "$CURRENT_BRANCH" --force
+
+# --- 3. WEBHOOK CALL ---
+if [ -n "$WEBHOOK_VIDEO" ]; then
     echo "⏳ Waiting 5 seconds for GitHub sync..."
     sleep 5
 
