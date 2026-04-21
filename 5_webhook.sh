@@ -1,78 +1,75 @@
 #!/bin/bash
 
-# --- CHECK REQUIRED SECRETS ---
-: "${WEBHOOK_REEL:?Missing WEBHOOK_REEL}"
-: "${WEBHOOK_VIDEO:?Missing WEBHOOK_VIDEO}"
-
-# --- 1. FIND MP4 FILE ---
-OUT_FILE=$(find ./output -type f -name "*.mp4" | head -n 1)
+# --- 1. SETUP FILENAMES ---
+OUT_FILE=$(ls ./output/*.mp4 2>/dev/null | head -n 1)
 
 if [ ! -f "$OUT_FILE" ]; then
-    echo "❌ Error: No mp4 file found."
+    echo "❌ Error: Final video file was not created."
     exit 1
 fi
 
 URL_FILENAME=$(basename "$OUT_FILE")
 SAFE_NAME="${URL_FILENAME%.*}"
 
-# --- 2. DETECT TYPE ---
-if [[ "$OUT_FILE" == *"/reel/"* ]]; then
-    TYPE="reel"
-elif [[ "$OUT_FILE" == *"/video/"* ]]; then
-    TYPE="video"
-else
-    echo "❌ Unknown folder type"
-    exit 1
-fi
-
-echo "📦 Detected type: $TYPE"
-
-# --- 3. GITHUB UPLOAD ---
+# --- 2. GITHUB UPLOAD ---
 echo "-----------------------------------------------"
-echo "📤 UPLOADING TO GITHUB..."
+echo "📤 UPLOADING TO GITHUB REPO..."
 
 git config --global user.name "github-actions[bot]"
 git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
 CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+echo "🌿 Detected branch: $CURRENT_BRANCH"
 
+# Clean output except current file
+find ./output -type f ! -name "$URL_FILENAME" -delete
+
+# Force add
 git add -f "$OUT_FILE"
 git add -f metadata.json
 
 RAW_URL="https://raw.githubusercontent.com/${GITHUB_REPOSITORY}/${CURRENT_BRANCH}/output/${URL_FILENAME}"
 
-git commit -m "Upload $TYPE: $SAFE_NAME [skip ci]" || git commit --amend --no-edit
+echo "⚙️ Force pushing to $CURRENT_BRANCH..."
+git commit -m "Refresh Reel: $SAFE_NAME [skip ci]" || git commit --amend --no-edit
 git push origin "$CURRENT_BRANCH" --force
 
-echo "⏳ Waiting for GitHub sync..."
-sleep 8
+# --- 3. WEBHOOK CALL (FIXED DUAL VERSION) ---
+if [ -n "$WEBHOOK_REEL" ] && [ -n "$WEBHOOK_VIDEO" ]; then
 
-# --- 4. BUILD PAYLOAD ---
-PAYLOAD=$(jq -n \
-  --arg url "$RAW_URL" \
-  --arg name "$URL_FILENAME" \
-  --arg type "$TYPE" \
-  '{fileUrl: $url, fileName: $name, type: $type}')
+    echo "⏳ Waiting 5 seconds for GitHub sync..."
+    sleep 5
 
-# --- 5. SEND WEBHOOKS (BOTH) ---
+    echo "📡 Sending Webhook Payload..."
 
-echo "📡 Sending Reel Webhook..."
-RESPONSE_REEL=$(curl -s -L -X POST \
-  "$WEBHOOK_REEL" \
-  -H "Content-Type: application/json" \
-  -d "$PAYLOAD")
+    PAYLOAD=$(jq -n \
+      --arg url "$RAW_URL" \
+      --arg name "$URL_FILENAME" \
+      '{fileUrl: $url, fileName: $name}')
 
-echo "📩 Reel Response:"
-echo "$RESPONSE_REEL"
+    # --- REEL WEBHOOK ---
+    echo "📡 Sending Reel Webhook..."
+    RESPONSE_REEL=$(curl -s -L -X POST \
+      "$WEBHOOK_REEL" \
+      -H "Content-Type: application/json" \
+      -d "$PAYLOAD")
 
-echo "📡 Sending Video Webhook..."
-RESPONSE_VIDEO=$(curl -s -L -X POST \
-  "$WEBHOOK_VIDEO" \
-  -H "Content-Type: application/json" \
-  -d "$PAYLOAD")
+    echo "📩 Reel Response:"
+    echo "$RESPONSE_REEL"
 
-echo "📩 Video Response:"
-echo "$RESPONSE_VIDEO"
+    # --- VIDEO WEBHOOK ---
+    echo "📡 Sending Video Webhook..."
+    RESPONSE_VIDEO=$(curl -s -L -X POST \
+      "$WEBHOOK_VIDEO" \
+      -H "Content-Type: application/json" \
+      -d "$PAYLOAD")
+
+    echo "📩 Video Response:"
+    echo "$RESPONSE_VIDEO"
+
+else
+    echo "❌ Missing WEBHOOK_REEL or WEBHOOK_VIDEO"
+fi
 
 echo "-----------------------------------------------"
-echo "✨ Done"
+echo "✨ Process Complete."
