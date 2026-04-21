@@ -1,23 +1,7 @@
 #!/bin/bash
 
-# --- 1. FIND MP4 FILE (REEL OR VIDEO) ---
-OUT_FILE=$(find ./output -type f -name "*.mp4" | head -n 1)
-
-if [ ! -f "$OUT_FILE" ]; then
-    echo "❌ Error: Final video file was not created."
-    echo "📂 Debug output folder:"
-    find ./output -type f || true
-    exit 1
-fi
-
-echo "📦 Found file: $OUT_FILE"
-
-URL_FILENAME=$(basename "$OUT_FILE")
-SAFE_NAME="${URL_FILENAME%.*}"
-
-# --- 2. GITHUB SETUP ---
 echo "-----------------------------------------------"
-echo "📤 UPLOADING TO GITHUB REPO..."
+echo "📤 UPLOADING TO GITHUB..."
 
 git config --global user.name "github-actions[bot]"
 git config --global user.email "github-actions[bot]@users.noreply.github.com"
@@ -25,55 +9,69 @@ git config --global user.email "github-actions[bot]@users.noreply.github.com"
 CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 echo "🌿 Branch: $CURRENT_BRANCH"
 
-git add -f "$OUT_FILE"
-git add -f metadata.json
+# --- FUNCTION TO PROCESS FILE ---
+process_file() {
+    FILE_PATH="$1"
+    TYPE="$2"
+    WEBHOOK="$3"
 
-# --- 3. FIXED RAW URL (IMPORTANT PART) ---
-REL_PATH="${OUT_FILE#./}"
+    if [ ! -f "$FILE_PATH" ]; then
+        return
+    fi
 
-RAW_URL="https://raw.githubusercontent.com/${GITHUB_REPOSITORY}/${CURRENT_BRANCH}/${REL_PATH}"
+    echo "📦 Processing $TYPE: $FILE_PATH"
 
-echo "🔗 RAW_URL generated:"
-echo "$RAW_URL"
+    URL_FILENAME=$(basename "$FILE_PATH")
+    SAFE_NAME="${URL_FILENAME%.*}"
 
-# --- commit + push ---
-git commit -m "Refresh: $SAFE_NAME [skip ci]" || git commit --amend --no-edit
-git push origin "$CURRENT_BRANCH" --force
+    git add -f "$FILE_PATH"
+    git add -f metadata.json
 
-# --- 4. WEBHOOK CALL (DUAL) ---
-if [ -n "$WEBHOOK_REEL" ] && [ -n "$WEBHOOK_VIDEO" ]; then
+    REL_PATH="${FILE_PATH#./}"
+    RAW_URL="https://raw.githubusercontent.com/${GITHUB_REPOSITORY}/${CURRENT_BRANCH}/${REL_PATH}"
 
-    echo "⏳ Waiting 5 seconds for GitHub sync..."
+    echo "🔗 RAW_URL:"
+    echo "$RAW_URL"
+
+    git commit -m "Upload $TYPE: $SAFE_NAME [skip ci]" || git commit --amend --no-edit
+    git push origin "$CURRENT_BRANCH" --force
+
+    echo "⏳ Waiting 5 seconds..."
     sleep 5
 
     PAYLOAD=$(jq -n \
       --arg url "$RAW_URL" \
       --arg name "$URL_FILENAME" \
-      '{fileUrl: $url, fileName: $name}')
+      --arg type "$TYPE" \
+      '{fileUrl: $url, fileName: $name, type: $type}')
 
-    # --- REEL WEBHOOK ---
-    echo "📡 Sending Reel Webhook..."
-    RESPONSE_REEL=$(curl -s -L -X POST \
-      "$WEBHOOK_REEL" \
+    echo "📡 Sending $TYPE webhook..."
+
+    RESPONSE=$(curl -s -L -X POST \
+      "$WEBHOOK" \
       -H "Content-Type: application/json" \
       -d "$PAYLOAD")
 
-    echo "📩 Reel Response:"
-    echo "$RESPONSE_REEL"
+    echo "📩 $TYPE Response:"
+    echo "$RESPONSE"
 
-    # --- VIDEO WEBHOOK ---
-    echo "📡 Sending Video Webhook..."
-    RESPONSE_VIDEO=$(curl -s -L -X POST \
-      "$WEBHOOK_VIDEO" \
-      -H "Content-Type: application/json" \
-      -d "$PAYLOAD")
+    echo "-----------------------------------------------"
+}
 
-    echo "📩 Video Response:"
-    echo "$RESPONSE_VIDEO"
-
-else
-    echo "❌ Missing WEBHOOK_REEL or WEBHOOK_VIDEO"
+# --- PROCESS REEL FILES ---
+if [ -n "$WEBHOOK_REEL" ]; then
+    for file in ./output/reel/*.mp4; do
+        [ -e "$file" ] || continue
+        process_file "$file" "reel" "$WEBHOOK_REEL"
+    done
 fi
 
-echo "-----------------------------------------------"
-echo "✨ Process Complete."
+# --- PROCESS VIDEO FILES ---
+if [ -n "$WEBHOOK_VIDEO" ]; then
+    for file in ./output/video/*.mp4; do
+        [ -e "$file" ] || continue
+        process_file "$file" "video" "$WEBHOOK_VIDEO"
+    done
+fi
+
+echo "✨ Done"
