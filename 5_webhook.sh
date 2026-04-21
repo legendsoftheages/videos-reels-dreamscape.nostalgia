@@ -2,7 +2,6 @@
 
 # --- 1. SETUP FILENAMES ---
 OUT_FILE=$(ls ./output/*.mp4 2>/dev/null | head -n 1)
-
 if [ ! -f "$OUT_FILE" ]; then
     echo "❌ Error: Final video file was not created."
     exit 1
