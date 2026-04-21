@@ -7,9 +7,9 @@ LOGO="./assets/spotify.png"
 SCRATCHES="./assets/scratches/1.mp4"
 METADATA="metadata.json"
 OUT_DIR="./output/video"
+rm -rf ./output/*
 
 mkdir -p "$OUT_DIR"
-rm -rf ./output/*
 
 # 2. Re-create the folder (if it was deleted) and move/save the new video back
 # (Assuming your generation script puts the new file back in ./output/)
