@@ -18,29 +18,24 @@ else
     FILENAME="output.mp4"
 fi
 
-
 FINAL_OUT="$OUT_DIR/$FILENAME"
-# --- 1. FIND MP4 FILE ---
-OUT_FILE=$(find ./output -type f -name "*.mp4" | head -n 1)
 
-# 2. VERIFY ASSETS
+# 2. CHECK AUDIO
 if [ ! -f "$AUDIO" ]; then 
     echo "❌ Missing audio"
-if [ ! -f "$OUT_FILE" ]; then
-    echo "❌ Error: No mp4 file found."
     exit 1
 fi
 
-# 3. DURATION CALCULATION
+echo "🎬 Rendering: $FILENAME"
+
+# 3. GET DURATION
 DURATION=$(ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "$AUDIO")
 
 LOGO_START=$(echo "$DURATION / 2" | bc -l)
-
 FADE_DURATION=1.5
 FADE_OUT_TIME=$(echo "$DURATION - $FADE_DURATION" | bc -l)
 
-echo "🎬 Rendering: $FILENAME"
-echo "⏱️ Duration: $DURATION | Logo at: $LOGO_START"
+echo "⏱️ Duration: $DURATION"
 
 # 4. RENDER VIDEO
 ffmpeg -y \
@@ -70,8 +65,6 @@ crop=1080:1920[bg];
 
 [logo]fade=t=in:st=$LOGO_START:d=0.6:alpha=1,
 fade=t=out:st=$FADE_OUT_TIME:d=2:alpha=1[logofaded];
-URL_FILENAME=$(basename "$OUT_FILE")
-SAFE_NAME="${URL_FILENAME%.*}"
 
 [vbase][logofaded]overlay=(W-w)/2:H-h-60:enable='between(t,$LOGO_START,$DURATION)',
 format=yuv420p,
@@ -88,3 +81,10 @@ afade=t=out:st=$FADE_OUT_TIME:d=2[a]
 -c:a aac -b:a 192k \
 "$FINAL_OUT"
 
+# 5. VERIFY OUTPUT
+if [ ! -f "$FINAL_OUT" ]; then
+    echo "❌ Render failed"
+    exit 1
+fi
+
+echo "✅ Success: $FINAL_OUT"
