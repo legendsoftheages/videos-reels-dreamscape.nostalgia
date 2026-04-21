@@ -40,3 +40,33 @@ jobs:
           NOTION_PAGE_ID: ${{ secrets.NOTION_PAGE_ID }}
           YT_PLAYLIST_ID: ${{ secrets.YT_PLAYLIST_ID }}
         run: python 1_Notion_check.py
+
+      - name: 📝 Commit and Push Metadata (Early Save)
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          
+          git add -f metadata.json
+          
+          if git diff --quiet && git diff --staged --quiet; then
+            echo "No changes to metadata.json"
+          else
+            git commit -m "Update metadata for new track [skip ci]"
+            # DYNAMIC BRANCH PUSH: Works for main, beta, or any other branch
+            git push origin ${{ github.ref_name }}
+          fi
+
+      - name: 🛠️ Install System Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg jq bc
+          sudo -v && curl https://rclone.org/install.sh | sudo bash
+
+      - name: 📥 Step 2 - Download & Cleanup Assets
+        env:
+          PIKPAK_USER: ${{ secrets.PIKPAK_USER }}
+          PIKPAK_PASS: ${{ secrets.PIKPAK_PASS }}
+        run: |
+          rclone config create mypikpak pikpak user "$PIKPAK_USER" pass "$PIKPAK_PASS"
+          python 2_download_video.py
+
