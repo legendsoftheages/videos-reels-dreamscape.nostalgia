@@ -53,7 +53,7 @@ crop=min(iw\,ih):min(iw\,ih),
 scale=300:300,
 gblur=sigma=15,
 scale=1200:2000:force_original_aspect_ratio=increase,
-zoompan=z='zoom+0.0008':d=1:s=1200x2000:fps=30,
+zoompan=z='zoom+0.008':d=1:s=1200x2000:fps=30,
 rotate='0.04*sin(2*PI*t/5)':fillcolor=black@0,
 crop=1080:1920[bg];
 
