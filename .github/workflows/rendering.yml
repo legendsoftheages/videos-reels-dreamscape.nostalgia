@@ -49,5 +49,5 @@ jobs:
         
       - name: 🎬 Step 4 - reel output
         run: |
-          rm -rf output/
-          bash 4_video_output.sh
+          rm -rf output/reel/
+          bash 4_reel_output.sh
