@@ -71,3 +71,4 @@ fi
 
 echo "-----------------------------------------------"
 echo "✨ Process Complete."
+echo "$RAW_URL"
