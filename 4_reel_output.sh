@@ -66,6 +66,15 @@ echo "✅ Success: $FINAL_OUT"
 
 # ... (FFmpeg command finishes above) ...
 
+# --- 2. GITHUB UPLOAD (FORCE PUSH) ---
+echo "-----------------------------------------------"
+echo "📤 UPLOADING TO GITHUB REPO..."
+
+git config --global user.name "github-actions[bot]"
+git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+echo "🌿 Detected branch: $CURRENT_BRANCH"
 
 
 # Check if the secret variable is actually set
