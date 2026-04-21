@@ -17,9 +17,7 @@ if [ -f "$METADATA" ]; then
 else
     FILENAME="output.mp4"
 fi
-# --- CHECK REQUIRED SECRETS ---
-: "${WEBHOOK_REEL:?Missing WEBHOOK_REEL}"
-: "${WEBHOOK_VIDEO:?Missing WEBHOOK_VIDEO}"
+
 
 FINAL_OUT="$OUT_DIR/$FILENAME"
 # --- 1. FIND MP4 FILE ---
