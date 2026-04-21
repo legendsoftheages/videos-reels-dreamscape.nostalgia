@@ -46,28 +46,25 @@ RAW_URL="https://raw.githubusercontent.com/${GITHUB_REPOSITORY}/${CURRENT_BRANCH
 git commit -m "Upload $TYPE: $SAFE_NAME [skip ci]" || git commit --amend --no-edit
 git push origin "$CURRENT_BRANCH" --force
 
-# --- WEBHOOK CALL (FIXED) ---
-if [ -n "$WEBHOOK_URL" ]; then
-    echo "⏳ Waiting 5 seconds..."
-    sleep 5
+# --- WEBHOOK CALL (SEPARATE SAFE VERSION) ---
+echo "⏳ Waiting 5 seconds..."
+sleep 5
 
-    echo "📡 Sending Webhook for $TYPE"
+PAYLOAD=$(jq -n \
+    --arg url "$RAW_URL" \
+    --arg name "$URL_FILENAME" \
+    --arg type "$TYPE" \
+    '{fileUrl: $url, fileName: $name, type: $type}')
 
-    PAYLOAD=$(jq -n \
-        --arg url "$RAW_URL" \
-        --arg name "$URL_FILENAME" \
-        --arg type "$TYPE" \
-        '{fileUrl: $url, fileName: $name, type: $type}')
+echo "📡 Sending Webhook..."
 
-    RESPONSE=$(curl -s -L \
-        -X POST "$WEBHOOK_URL" \
-        -H "Content-Type: application/json" \
-        -H "Accept: application/json" \
-        -d "$PAYLOAD" \
-        -w "\nHTTP_STATUS:%{http_code}")
+RESPONSE=$(curl -s -L -X POST \
+  "$WEBHOOK_URL" \
+  -H "Content-Type: application/json" \
+  -d "$PAYLOAD")
 
-    echo "📩 Webhook Response:"
-    echo "$RESPONSE"
+echo "📩 Response:"
+echo "$RESPONSE"
 fi
 
 echo "-----------------------------------------------"
