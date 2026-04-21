@@ -87,19 +87,4 @@ afade=t=out:st=$FADE_OUT_TIME:d=2[a]
 -pix_fmt yuv420p \
 -c:a aac -b:a 192k \
 "$FINAL_OUT"
-# --- 2. DETECT TYPE FROM FOLDER ---
-if [[ "$OUT_FILE" == *"/reel/"* ]]; then
-    WEBHOOK_URL="$WEBHOOK_REEL"
-    TYPE="reel"
-elif [[ "$OUT_FILE" == *"/video/"* ]]; then
-    WEBHOOK_URL="$WEBHOOK_VIDEO"
-    TYPE="video"
-else
-    echo "❌ Unknown folder type"
-    exit 1
-fi
-
-echo "✅ Success: $FINAL_OUT"
-echo "📦 Detected type: $TYPE"
-
 
