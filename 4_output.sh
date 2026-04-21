@@ -6,7 +6,7 @@ IMAGE="./assets/image/image.jpg"
 LOGO="./assets/spotify.png"
 SCRATCHES="./assets/scratches/1.mp4"
 METADATA="metadata.json"
-OUT_DIR="./output/video/"
+OUT_DIR="./output/video"
 
 mkdir -p "$OUT_DIR"
 rm -rf ./output/*
