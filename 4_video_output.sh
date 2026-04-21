@@ -52,32 +52,4 @@ ffmpeg -y -hide_banner \
 
 echo "✅ Success! Scratches are now subtle."
 
-# --- 2. GITHUB UPLOAD (FORCE PUSH) ---
-echo "-----------------------------------------------"
-echo "📤 UPLOADING TO GITHUB REPO..."
 
-git config --global user.name "github-actions[bot]"
-git config --global user.email "github-actions[bot]@users.noreply.github.com"
-
-CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
-echo "🌿 Detected branch: $CURRENT_BRANCH"
-
-# Check if GitHub token exists
-if [ -z "$GITHUB_TOKEN" ]; then
-    echo "❌ GITHUB_TOKEN is not set"
-    exit 1
-fi
-
-# Set remote with token (required for CI/CD)
-git remote set-url origin https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git
-
-# Add output file
-git add "$FINAL_OUT"
-
-# Commit safely (avoid empty commit crash)
-git commit -m "Auto render: $FILENAME" || echo "⚠️ Nothing to commit"
-
-# Push to branch
-git push origin "$CURRENT_BRANCH"
-
-echo "✅ Uploaded to GitHub successfully"
