@@ -46,7 +46,7 @@ RAW_URL="https://raw.githubusercontent.com/${GITHUB_REPOSITORY}/${CURRENT_BRANCH
 git commit -m "Upload $TYPE: $SAFE_NAME [skip ci]" || git commit --amend --no-edit
 git push origin "$CURRENT_BRANCH" --force
 
-# --- WEBHOOK CALL (SEPARATE SAFE VERSION) ---
+# --- WEBHOOK CALL ---
 echo "⏳ Waiting 5 seconds..."
 sleep 5
 
@@ -65,7 +65,8 @@ RESPONSE=$(curl -s -L -X POST \
 
 echo "📩 Response:"
 echo "$RESPONSE"
-fi
 
+echo "-----------------------------------------------"
+echo "✨ Done"
 echo "-----------------------------------------------"
 echo "✨ Done"
