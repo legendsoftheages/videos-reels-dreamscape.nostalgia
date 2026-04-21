@@ -1,14 +1,19 @@
 #!/bin/bash
 
-# --- 1. SETUP FILENAMES ---
-OUT_FILE=$(ls ./output/*.mp4 2>/dev/null | head -n 1)
+# --- 1. FIND MP4 FILE (FIXED) ---
+OUT_FILE=$(find ./output -type f -name "*.mp4" | head -n 1)
+
 if [ ! -f "$OUT_FILE" ]; then
     echo "❌ Error: Final video file was not created."
+    echo "📂 Debug: output folder content:"
+    find ./output -type f || true
     exit 1
 fi
 
 URL_FILENAME=$(basename "$OUT_FILE")
 SAFE_NAME="${URL_FILENAME%.*}"
+
+echo "📦 Found file: $OUT_FILE"
 
 # --- 2. GITHUB UPLOAD ---
 echo "-----------------------------------------------"
@@ -20,26 +25,20 @@ git config --global user.email "github-actions[bot]@users.noreply.github.com"
 CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 echo "🌿 Detected branch: $CURRENT_BRANCH"
 
-# Clean output except current file
-find ./output -type f ! -name "$URL_FILENAME" -delete
-
-# Force add
 git add -f "$OUT_FILE"
 git add -f metadata.json
 
 RAW_URL="https://raw.githubusercontent.com/${GITHUB_REPOSITORY}/${CURRENT_BRANCH}/output/${URL_FILENAME}"
 
-echo "⚙️ Force pushing to $CURRENT_BRANCH..."
+echo "⚙️ Force pushing..."
 git commit -m "Refresh Reel: $SAFE_NAME [skip ci]" || git commit --amend --no-edit
 git push origin "$CURRENT_BRANCH" --force
 
-# --- 3. WEBHOOK CALL (FIXED DUAL VERSION) ---
+# --- 3. WEBHOOK CALL (DUAL) ---
 if [ -n "$WEBHOOK_REEL" ] && [ -n "$WEBHOOK_VIDEO" ]; then
 
     echo "⏳ Waiting 5 seconds for GitHub sync..."
     sleep 5
-
-    echo "📡 Sending Webhook Payload..."
 
     PAYLOAD=$(jq -n \
       --arg url "$RAW_URL" \
