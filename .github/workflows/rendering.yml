@@ -1,0 +1,45 @@
+name: Reel Automation
+ 
+permissions:
+  contents: write
+  
+on:
+  workflow_dispatch:
+  push:
+  schedule:
+    - cron: '0 3 * * *'
+    - cron: '0 4 * * *'
+    - cron: '0 5 * * *'
+  
+jobs:
+  render-and-upload:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15  # Stop the job if it hangs for more than 30 mins
+    
+    steps:
+      - name: 📂 Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 
+
+    
+       
+
+      - name: 🛠️ Install System Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg jq bc
+          sudo -v && curl https://rclone.org/install.sh | sudo bash
+
+      
+          
+      - name: 🚀 Step 5 - Webhook & Force Push Video
+        env:
+          WEBHOOK_REEL: ${{ secrets.WEBHOOK_REEL }}
+          WEBHOOK_VIDEO: ${{ secrets.WEBHOOK_VIDEO }}
+        run: bash 5_webhook.sh
+
+       
+      - name: ☁️ Step 8 - Final PikPak Cloud Cleanup
+        if: success()
+        run: python 8_pikpak_cleanup.py
