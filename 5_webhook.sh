@@ -1,33 +1,46 @@
 #!/bin/bash
 
-echo "-----------------------------------------------"
-echo "📤 UPLOADING TO GITHUB..."
+echo "📂 Debug output:"
+find ./output -type f || true
 
 git config --global user.name "github-actions[bot]"
 git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
 CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
-echo "🌿 Branch: $CURRENT_BRANCH"
 
-# --- FUNCTION TO PROCESS FILE ---
-process_file() {
-    FILE_PATH="$1"
-    TYPE="$2"
-    WEBHOOK="$3"
+FILES=$(find ./output -type f -name "*.mp4")
 
-    if [ ! -f "$FILE_PATH" ]; then
-        return
-    fi
+if [ -z "$FILES" ]; then
+    echo "❌ No MP4 files found"
+    exit 1
+fi
 
-    echo "📦 Processing $TYPE: $FILE_PATH"
+for FILE in $FILES; do
 
-    URL_FILENAME=$(basename "$FILE_PATH")
+    echo "-----------------------------------------------"
+    echo "📦 Processing: $FILE"
+
+    URL_FILENAME=$(basename "$FILE")
     SAFE_NAME="${URL_FILENAME%.*}"
 
-    git add -f "$FILE_PATH"
+    # --- Detect type ---
+    if [[ "$FILE" == *"/reel/"* ]]; then
+        WEBHOOK="$WEBHOOK_REEL"
+        TYPE="reel"
+    elif [[ "$FILE" == *"/video/"* ]]; then
+        WEBHOOK="$WEBHOOK_VIDEO"
+        TYPE="video"
+    else
+        echo "⚠️ Unknown type, skipping"
+        continue
+    fi
+
+    echo "📌 Type detected: $TYPE"
+
+    git add -f "$FILE"
     git add -f metadata.json
 
-    REL_PATH="${FILE_PATH#./}"
+    REL_PATH="${FILE#./}"
     RAW_URL="https://raw.githubusercontent.com/${GITHUB_REPOSITORY}/${CURRENT_BRANCH}/${REL_PATH}"
 
     echo "🔗 RAW_URL:"
@@ -36,7 +49,7 @@ process_file() {
     git commit -m "Upload $TYPE: $SAFE_NAME [skip ci]" || git commit --amend --no-edit
     git push origin "$CURRENT_BRANCH" --force
 
-    echo "⏳ Waiting 5 seconds..."
+    echo "⏳ Waiting 5s..."
     sleep 5
 
     PAYLOAD=$(jq -n \
@@ -52,26 +65,9 @@ process_file() {
       -H "Content-Type: application/json" \
       -d "$PAYLOAD")
 
-    echo "📩 $TYPE Response:"
+    echo "📩 Response:"
     echo "$RESPONSE"
 
-    echo "-----------------------------------------------"
-}
-
-# --- PROCESS REEL FILES ---
-if [ -n "$WEBHOOK_REEL" ]; then
-    for file in ./output/reel/*.mp4; do
-        [ -e "$file" ] || continue
-        process_file "$file" "reel" "$WEBHOOK_REEL"
-    done
-fi
-
-# --- PROCESS VIDEO FILES ---
-if [ -n "$WEBHOOK_VIDEO" ]; then
-    for file in ./output/video/*.mp4; do
-        [ -e "$file" ] || continue
-        process_file "$file" "video" "$WEBHOOK_VIDEO"
-    done
-fi
+done
 
 echo "✨ Done"
