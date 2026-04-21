@@ -36,7 +36,9 @@ jobs:
           sudo apt-get install -y ffmpeg jq bc
           sudo -v && curl https://rclone.org/install.sh | sudo bash
 
- 
+       # 🔐 IMPORTANT: Pass GitHub token to environment
+      - name: 🔐 Set GitHub Token
+        run: echo "GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}" >> $GITHUB_ENV
 
       - name: 🔪 Step 3 - Split Audio & Image
         run: bash 3_audio_image_splitter.sh
@@ -48,5 +50,4 @@ jobs:
       - name: 🎬 Step 4 - reel output
         run: |
           rm -rf output/
-          
           bash 4_reel_output.sh
