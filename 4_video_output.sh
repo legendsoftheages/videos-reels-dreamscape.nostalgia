@@ -4,7 +4,7 @@
 AUDIO="./assets/audio/audio.mp3"
 IMAGE="./assets/image/image.jpg"
 LOGO="./assets/spotify.png"
-SCRATCHES="./assets/scratches/1.mp4"
+SCRATCHES="./assets/scratches/4.mp4"
 METADATA="metadata.json"
 OUT_DIR="./output/video"
 rm -rf ./output/*
