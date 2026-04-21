@@ -36,14 +36,11 @@ jobs:
           sudo apt-get install -y ffmpeg jq bc
           sudo -v && curl https://rclone.org/install.sh | sudo bash
 
-      - name: 📥 Step 2 - Download & Cleanup Assets
-        env:
-          PIKPAK_USER: ${{ secrets.PIKPAK_USER }}
-          PIKPAK_PASS: ${{ secrets.PIKPAK_PASS }}
-        run: |
-          rclone config create mypikpak pikpak user "$PIKPAK_USER" pass "$PIKPAK_PASS"
-          python 2_download_video.py
+ 
 
+      - name: 🔪 Step 3 - Split Audio & Image
+        run: bash 3_audio_image_splitter.sh
+        
       - name: 🎬 Step 4 - Render Video
         run: |
           rm -rf output/
