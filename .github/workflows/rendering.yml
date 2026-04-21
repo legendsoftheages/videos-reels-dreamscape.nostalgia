@@ -45,8 +45,8 @@ jobs:
         run: python 3.5_trim_audio.py
 
         
-      - name: 🎬 Step 4.5 - Render Video
+      - name: 🎬 Step 4 - reel output
         run: |
           rm -rf output/
-          mkdir -p output/
-          bash 4.5_output.sh
+          
+          bash 4_reel_output.sh
