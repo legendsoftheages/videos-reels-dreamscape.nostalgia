@@ -41,8 +41,8 @@ jobs:
       - name: 🔪 Step 3 - Split Audio & Image
         run: bash 3_audio_image_splitter.sh
         
-      - name: 🎬 Step 4 - Render Video
+      - name: 🎬 Step 4.5 - Render Video
         run: |
           rm -rf output/
           mkdir -p output/
-          bash 4_output.sh
+          bash 4.5_output.sh
