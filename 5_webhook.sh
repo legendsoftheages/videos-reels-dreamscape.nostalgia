@@ -15,12 +15,10 @@ fi
 URL_FILENAME=$(basename "$OUT_FILE")
 SAFE_NAME="${URL_FILENAME%.*}"
 
-# --- 2. DETECT TYPE FROM FOLDER ---
+# --- 2. DETECT TYPE ---
 if [[ "$OUT_FILE" == *"/reel/"* ]]; then
-    WEBHOOK_URL="$WEBHOOK_REEL"
     TYPE="reel"
 elif [[ "$OUT_FILE" == *"/video/"* ]]; then
-    WEBHOOK_URL="$WEBHOOK_VIDEO"
     TYPE="video"
 else
     echo "❌ Unknown folder type"
@@ -46,27 +44,35 @@ RAW_URL="https://raw.githubusercontent.com/${GITHUB_REPOSITORY}/${CURRENT_BRANCH
 git commit -m "Upload $TYPE: $SAFE_NAME [skip ci]" || git commit --amend --no-edit
 git push origin "$CURRENT_BRANCH" --force
 
-# --- WEBHOOK CALL ---
-echo "⏳ Waiting 5 seconds..."
-sleep 5
+echo "⏳ Waiting for GitHub sync..."
+sleep 8
 
+# --- 4. BUILD PAYLOAD ---
 PAYLOAD=$(jq -n \
-    --arg url "$RAW_URL" \
-    --arg name "$URL_FILENAME" \
-    --arg type "$TYPE" \
-    '{fileUrl: $url, fileName: $name, type: $type}')
+  --arg url "$RAW_URL" \
+  --arg name "$URL_FILENAME" \
+  --arg type "$TYPE" \
+  '{fileUrl: $url, fileName: $name, type: $type}')
 
-echo "📡 Sending Webhook..."
+# --- 5. SEND WEBHOOKS (BOTH) ---
 
-RESPONSE=$(curl -s -L -X POST \
-  "$WEBHOOK_URL" \
+echo "📡 Sending Reel Webhook..."
+RESPONSE_REEL=$(curl -s -L -X POST \
+  "$WEBHOOK_REEL" \
   -H "Content-Type: application/json" \
   -d "$PAYLOAD")
 
-echo "📩 Response:"
-echo "$RESPONSE"
+echo "📩 Reel Response:"
+echo "$RESPONSE_REEL"
 
-echo "-----------------------------------------------"
-echo "✨ Done"
+echo "📡 Sending Video Webhook..."
+RESPONSE_VIDEO=$(curl -s -L -X POST \
+  "$WEBHOOK_VIDEO" \
+  -H "Content-Type: application/json" \
+  -d "$PAYLOAD")
+
+echo "📩 Video Response:"
+echo "$RESPONSE_VIDEO"
+
 echo "-----------------------------------------------"
 echo "✨ Done"
