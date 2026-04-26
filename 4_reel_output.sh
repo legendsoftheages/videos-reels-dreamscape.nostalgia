@@ -32,7 +32,7 @@ echo "🎬 Rendering: $FILENAME"
 DURATION=$(ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "$AUDIO")
 
 LOGO_START=$(echo "$DURATION / 2" | bc -l)
-FADE_DURATION=0.1
+FADE_DURATION=0.01
 FADE_OUT_TIME=$(echo "$DURATION - $FADE_DURATION" | bc -l)
 
 echo "⏱️ Duration: $DURATION"
