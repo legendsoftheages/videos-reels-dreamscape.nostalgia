@@ -70,7 +70,8 @@ fade=t=out:st=$FADE_OUT_TIME:d=2:alpha=1[logofaded];
 format=yuv420p,
 fade=t=out:st=$FADE_OUT_TIME:d=$FADE_DURATION[v];
 
-[1:a]afade=t=out:st=$FADE_OUT_TIME:d=2[a]
+[1:a]afade=t=in:st=0:d=1.5,
+afade=t=out:st=$FADE_OUT_TIME:d=2[a]
 " \
 -map "[v]" \
 -map "[a]" \
