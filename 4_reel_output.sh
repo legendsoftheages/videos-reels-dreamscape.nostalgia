@@ -68,11 +68,9 @@ fade=t=out:st=$FADE_OUT_TIME:d=2:alpha=1[logofaded];
 
 [vbase][logofaded]overlay=(W-w)/2:H-h-60:enable='between(t,$LOGO_START,$DURATION)',
 format=yuv420p,
-fade=t=in:st=0:d=$FADE_DURATION,
 fade=t=out:st=$FADE_OUT_TIME:d=$FADE_DURATION[v];
 
-[1:a]afade=t=in:st=0:d=1.5,
-afade=t=out:st=$FADE_OUT_TIME:d=2[a]
+[1:a]afade=t=out:st=$FADE_OUT_TIME:d=2[a]
 " \
 -map "[v]" \
 -map "[a]" \
