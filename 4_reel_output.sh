@@ -51,15 +51,9 @@ ffmpeg -y \
 -t "$DURATION" -loop 1 -i "$LOGO" \
 -stream_loop -1 -i "$SCRATCHES" \
 -filter_complex "
-[0:v]format=yuv420p,
-crop=min(iw\,ih):min(iw\,ih),
-scale=1080:1080,
-eq=saturation=1.2:contrast=1.05[cover];
+[0:v]format=yuv420p,crop=min(iw\,ih):min(iw\,ih),scale=1080:1080,eq=saturation=1.2:contrast=1.05[cover];
 
-[0:v]format=yuv420p,
-crop=min(iw\,ih):min(iw\,ih),
-scale=300:300,
-gblur=sigma=15,
+[0:v]format=yuv420p,crop=min(iw\,ih):min(iw\,ih),scale=300:300,gblur=sigma=15,
 scale=1200:2000:force_original_aspect_ratio=increase,
 zoompan=z='zoom+0.008':d=1:s=1200x2000:fps=30,
 rotate='0.04*sin(2*PI*t/5)':fillcolor=black@0,
@@ -76,14 +70,14 @@ fade=t=out:st=$FADE_OUT_TIME:d=1:alpha=1[logofaded];
 
 [vbase][logofaded]overlay=(W-w)/2:H-h-60:enable='between(t,$LOGO_START,$DURATION)'[withlogo];
 
-# --- SCRATCHES OVERLAY ---
-[3:v]scale=1080:1920,format=yuva420p,colorchannelmixer=aa=0.15[scratches];
+[3:v]scale=1080:1920:force_original_aspect_ratio=increase,
+crop=1080:1920,
+format=yuva420p,
+colorchannelmixer=aa=0.15[scratches];
 
-[withlogo][scratches]overlay=0:0:shortest=1,
-format=yuv420p,
+[withlogo][scratches]overlay=0:0:shortest=1,format=yuv420p,
 fade=t=out:st=$FADE_OUT_TIME:d=$FADE_DURATION[v];
 
-# --- AUDIO ---
 [1:a]afade=t=in:st=0:d=1.5,
 afade=t=out:st=$FADE_OUT_TIME:d=$FADE_DURATION[a]
 " \
