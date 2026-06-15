@@ -1,12 +1,11 @@
 {
-    "title": "Krell - Ocean Blues",
-    "artist": "Krell",
-    "track": "Ocean Blues",
-    "video_id": "gC5wXN4IkHc",
-    "playlist_item_id": "UEw4V0dZdDJmaGVuRDRzLWtSQWtJT19xZVYwdldpQmRTUS4xODJEMEQ5M0RCMDRGMzcy",
-    "yt_url": "https://www.youtube.com/watch?v=gC5wXN4IkHc",
+    "title": "statika - everything is gonna be okay",
+    "artist": "statika",
+    "track": "everything is gonna be okay",
+    "video_id": "QKrDCQBhZn0",
+    "playlist_item_id": "UEw4V0dZdDJmaGVuRDRzLWtSQWtJT19xZVYwdldpQmRTUS5EQkEyODM0NTk2MUFEQkYz",
+    "yt_url": "https://www.youtube.com/watch?v=QKrDCQBhZn0",
     "prefetch_urls": [
-        "https://www.youtube.com/watch?v=QKrDCQBhZn0"
-    ],
-    "cloud_file_name": "Ocean Blues.webm"
+        "https://www.youtube.com/watch?v=M0wzYXdbXYw"
+    ]
 }
