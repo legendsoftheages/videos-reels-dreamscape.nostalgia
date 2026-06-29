@@ -7,5 +7,6 @@
     "yt_url": "https://www.youtube.com/watch?v=kvGJxShV-pE",
     "prefetch_urls": [
         "https://www.youtube.com/watch?v=dvq12t0l6QU"
-    ]
+    ],
+    "cloud_file_name": "scanlines.webm"
 }
