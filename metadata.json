@@ -1,12 +1,11 @@
 {
-    "title": "Unknown - scanlines",
-    "artist": "Unknown",
-    "track": "scanlines",
-    "video_id": "kvGJxShV-pE",
-    "playlist_item_id": "UEw4V0dZdDJmaGVuRDRzLWtSQWtJT19xZVYwdldpQmRTUS4yM0IwNzUxRTc3MTg4Njkw",
-    "yt_url": "https://www.youtube.com/watch?v=kvGJxShV-pE",
+    "title": "Haunted Tape - waiting for a train",
+    "artist": "Haunted Tape",
+    "track": "waiting for a train",
+    "video_id": "dvq12t0l6QU",
+    "playlist_item_id": "UEw4V0dZdDJmaGVuRDRzLWtSQWtJT19xZVYwdldpQmRTUS4yMjgwQkZBOEI2MEQxMkUy",
+    "yt_url": "https://www.youtube.com/watch?v=dvq12t0l6QU",
     "prefetch_urls": [
-        "https://www.youtube.com/watch?v=dvq12t0l6QU"
-    ],
-    "cloud_file_name": "scanlines.webm"
+        "https://www.youtube.com/watch?v=2MTwlTdtOms"
+    ]
 }
