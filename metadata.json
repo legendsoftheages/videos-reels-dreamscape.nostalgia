@@ -1,12 +1,11 @@
 {
-    "title": "FutureVille - i forgot who i am",
-    "artist": "FutureVille",
-    "track": "i forgot who i am",
-    "video_id": "f_83DPVnXt0",
-    "playlist_item_id": "UEw4V0dZdDJmaGVuRDRzLWtSQWtJT19xZVYwdldpQmRTUS4wOEE0NEE4QTk1RTc0MUJB",
-    "yt_url": "https://www.youtube.com/watch?v=f_83DPVnXt0",
+    "title": "Etsu - elsewhere",
+    "artist": "Etsu",
+    "track": "elsewhere",
+    "video_id": "FEm4mpv0Ux8",
+    "playlist_item_id": "UEw4V0dZdDJmaGVuRDRzLWtSQWtJT19xZVYwdldpQmRTUS4yNjFFMzVEMkVDRTRDOEMz",
+    "yt_url": "https://www.youtube.com/watch?v=FEm4mpv0Ux8",
     "prefetch_urls": [
-        "https://www.youtube.com/watch?v=FEm4mpv0Ux8"
-    ],
-    "cloud_file_name": "i forgot who i am.webm"
+        "https://www.youtube.com/watch?v=uFiWr3igboQ"
+    ]
 }
