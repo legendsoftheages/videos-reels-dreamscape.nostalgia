@@ -1,12 +1,11 @@
 {
-    "title": "hozuki - oblivion",
-    "artist": "hozuki",
-    "track": "oblivion",
-    "video_id": "jSBfW739WFE",
-    "playlist_item_id": "UEw4V0dZdDJmaGVuRDRzLWtSQWtJT19xZVYwdldpQmRTUS5GNjNDRDREMDQxOThCMDQ2",
-    "yt_url": "https://www.youtube.com/watch?v=jSBfW739WFE",
+    "title": "my head is empty - a way out",
+    "artist": "my head is empty",
+    "track": "a way out",
+    "video_id": "k1oFLm902wM",
+    "playlist_item_id": "UEw4V0dZdDJmaGVuRDRzLWtSQWtJT19xZVYwdldpQmRTUS40NzZCMERDMjVEN0RFRThB",
+    "yt_url": "https://www.youtube.com/watch?v=k1oFLm902wM",
     "prefetch_urls": [
-        "https://www.youtube.com/watch?v=k1oFLm902wM"
-    ],
-    "cloud_file_name": "oblivion.webm"
+        "https://www.youtube.com/watch?v=yemJbKZAraE"
+    ]
 }
