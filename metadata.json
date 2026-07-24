@@ -1,12 +1,11 @@
 {
-    "title": "maxim - restart",
-    "artist": "maxim",
-    "track": "restart",
-    "video_id": "ZDT7kjkCR7s",
-    "playlist_item_id": "UEw4V0dZdDJmaGVuRDRzLWtSQWtJT19xZVYwdldpQmRTUS44Mjc5REFBRUE2MTdFRDU0",
-    "yt_url": "https://www.youtube.com/watch?v=ZDT7kjkCR7s",
+    "title": "Etsu - mental purgatory",
+    "artist": "Etsu",
+    "track": "mental purgatory",
+    "video_id": "LGuf_Yth1_A",
+    "playlist_item_id": "UEw4V0dZdDJmaGVuRDRzLWtSQWtJT19xZVYwdldpQmRTUS43NDhFRTgwOTRERTU4Rjg3",
+    "yt_url": "https://www.youtube.com/watch?v=LGuf_Yth1_A",
     "prefetch_urls": [
-        "https://www.youtube.com/watch?v=LGuf_Yth1_A"
-    ],
-    "cloud_file_name": "restart.webm"
+        "https://www.youtube.com/watch?v=BjIz_cVNisg"
+    ]
 }
