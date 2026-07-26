@@ -7,5 +7,6 @@
     "yt_url": "https://www.youtube.com/watch?v=wLzNhmPJqGk",
     "prefetch_urls": [
         "https://www.youtube.com/watch?v=J6Qygy_tVCc"
-    ]
+    ],
+    "cloud_file_name": "me.webm"
 }
