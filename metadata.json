@@ -7,5 +7,6 @@
     "yt_url": "https://www.youtube.com/watch?v=ZeFq6H8At6w",
     "prefetch_urls": [
         "https://www.youtube.com/watch?v=DnnhGnOEzDk"
-    ]
+    ],
+    "cloud_file_name": "drift.webm"
 }
