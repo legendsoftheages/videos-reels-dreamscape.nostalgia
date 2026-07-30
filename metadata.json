@@ -1,12 +1,11 @@
 {
-    "title": "Loucent - drift",
-    "artist": "Loucent",
-    "track": "drift",
-    "video_id": "ZeFq6H8At6w",
-    "playlist_item_id": "UEw4V0dZdDJmaGVuRDRzLWtSQWtJT19xZVYwdldpQmRTUS41NTZEOThBNThFOUVGQkVB",
-    "yt_url": "https://www.youtube.com/watch?v=ZeFq6H8At6w",
+    "title": "Droner - chamomile",
+    "artist": "Droner",
+    "track": "chamomile",
+    "video_id": "DnnhGnOEzDk",
+    "playlist_item_id": "UEw4V0dZdDJmaGVuRDRzLWtSQWtJT19xZVYwdldpQmRTUS43NERCMDIzQzFBMERCMEE3",
+    "yt_url": "https://www.youtube.com/watch?v=DnnhGnOEzDk",
     "prefetch_urls": [
-        "https://www.youtube.com/watch?v=DnnhGnOEzDk"
-    ],
-    "cloud_file_name": "drift.webm"
+        "https://www.youtube.com/watch?v=lbKIwQyROWU"
+    ]
 }
